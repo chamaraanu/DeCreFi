@@ -1,6 +1,9 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import "@openzeppelin/hardhat-upgrades"
 import * as dotenv from "dotenv";
+import * as fs from 'fs';
+import * as path from 'path';
 
 dotenv.config();
 const DEPLOY_PRIVATE_KEY = process.env.DEPLOY_PRIVATE_KEY != undefined ? process.env.DEPLOY_PRIVATE_KEY:""
@@ -8,7 +11,7 @@ const INFURA_SEPOLIA_API_KEY = process.env.INFURA_SEPOLIA_API_KEY != undefined ?
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.7",
+    version:"0.8.18",
     settings: {
       optimizer: {
         enabled: true,
