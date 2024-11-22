@@ -8,15 +8,40 @@ import "hardhat/console.sol";
 
 contract Vault is ERC4626Upgradeable {
     uint256 private constant _BASIS_POINT_SCALE = 1e4;
+    uint256 private totalAssetsDeposited;
+    uint256 private totalSharesOfferred;
+    uint256 private exchangeRate;
+
     
     function initialize(IERC20Upgradeable asset, string memory _name, string memory _symbol) public initializer {
         __ERC20_init(_name, _symbol);  // Initialize ERC20Upgradeable
         __ERC4626_init(asset);        // Initialize ERC4626Upgradeable
     }
 
+    function deposit(uint256 assets, address receiver) public virtual override returns (uint256) {
+        require(assets <= maxDeposit(receiver), "ERC4626: deposit more than max");
+
+        uint256 shares = previewDeposit(assets);
+        _deposit(_msgSender(), receiver, assets, shares);
+        totalAssetsDeposited += assets;
+        totalSharesOfferred += shares;
+
+        return shares;
+    }
+
     function depositYeild(address caller, uint256 assets) public {
+        totalAssetsDeposited += assets;
         address assetAddress = super.asset();
         SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(assetAddress), caller, address(this), assets);
+    }
+
+    function fundLoan(address caller, uint256 assets) public {
+        address assetAddress = super.asset();
+        SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(assetAddress), address(this), caller, assets);
+    }
+
+    function getExchangeRate() public view returns (uint256) {
+        return totalAssetsDeposited * 10 **18 / totalSharesOfferred;
     }
 
 }

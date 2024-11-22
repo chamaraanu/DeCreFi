@@ -16,19 +16,9 @@ async function main() {
         console.error(error);
     }
 
-    const asset = await ethers.getContractAt('Asset', addresses.asset);
     const vault = await ethers.getContractAt('Vault', addresses.investorVault);
-
-    const vaultAssetBalance = await asset.balanceOf(addresses.investorVault)
-    const ownerShareBalance = await vault.balanceOf(investor.address)
-
-    const vaultAssetBalanceFloat = parseFloat(ethers.utils.formatUnits(vaultAssetBalance, 0));
-    const ownerShareBalanceFloat = parseFloat(ethers.utils.formatUnits(ownerShareBalance, 0));
-
-    const exRate = ownerShareBalanceFloat / vaultAssetBalanceFloat;
-
-    console.log(`Vault asset balance is: ${vaultAssetBalance}`)
-    console.log(`Owner share balance is: ${ownerShareBalance}`);
+    const exRate = parseFloat(ethers.utils.formatUnits(await vault.getExchangeRate(), 18));
+    
     console.log(`Ex Rate is: ${exRate}`)
 }
 
