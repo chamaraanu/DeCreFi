@@ -7,6 +7,8 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "hardhat/console.sol";
 
 contract Vault is ERC4626Upgradeable {
+    using MathUpgradeable for uint256;
+
     uint256 private constant _BASIS_POINT_SCALE = 1e4;
     uint256 private totalAssetsDeposited;
     uint256 private totalSharesOfferred;
@@ -43,6 +45,20 @@ contract Vault is ERC4626Upgradeable {
 
     function getExchangeRate() public view returns (uint256) {
         return totalAssetsDeposited * 10 **18 / totalSharesOfferred;
+    }
+
+    /**
+     * @dev Internal conversion function (from assets to shares) with support for rounding direction.
+     */
+    function _convertToShares(uint256 assets, MathUpgradeable.Rounding rounding) internal view virtual override returns (uint256) {
+        return assets.mulDiv(totalSharesOfferred + 10 ** _decimalsOffset(), totalAssetsDeposited + 1, rounding);
+    }
+
+    /**
+     * @dev Internal conversion function (from shares to assets) with support for rounding direction.
+     */
+    function _convertToAssets(uint256 shares, MathUpgradeable.Rounding rounding) internal view virtual override returns (uint256) {
+        return shares.mulDiv(totalAssetsDeposited + 1, totalSharesOfferred + 10 ** _decimalsOffset(), rounding);
     }
 
 }

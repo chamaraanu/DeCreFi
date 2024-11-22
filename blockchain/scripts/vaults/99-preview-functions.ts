@@ -16,19 +16,17 @@ async function main() {
         console.error(error);
     }
 
-    console.log(`Borrow flow`);
     const vault = await ethers.getContractAt('Vault', addresses.investorVault);
-    // test functions 
+
     const name = await vault.connect(investor).name();
     console.log(`Name is: ${name}`);
     const setAsset = await vault.connect(investor).asset();
     console.log(`Asset is: ${setAsset}`);
 
-    const asset = await ethers.getContractAt('Asset', addresses.asset);
-    
-    await vault.connect(investor).fundLoan(borrower.address, 100000000);
-    console.log(`Borrower asset token shares: ${await asset.connect(borrower).balanceOf(borrower.address)}`);
-
+    console.log(`Preview Deposit: ${parseFloat(ethers.utils.formatUnits(await vault.connect(investor).previewDeposit(100000000), 6))}`)
+    console.log(`Preview Mint: ${parseFloat(ethers.utils.formatUnits(await vault.connect(investor).previewMint(100000000), 6))}`)
+    console.log(`Preview Withdraw: ${parseFloat(ethers.utils.formatUnits(await vault.connect(investor).previewWithdraw(100000000), 6))}`)
+    console.log(`Preview Redeem: ${parseFloat(ethers.utils.formatUnits(await vault.connect(investor).previewRedeem(100000000), 6))}`)
 }
 
 main();
