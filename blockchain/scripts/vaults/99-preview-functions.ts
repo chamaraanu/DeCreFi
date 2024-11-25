@@ -23,6 +23,7 @@ async function main() {
     const setAsset = await vault.connect(investor).asset();
     console.log(`Asset is: ${setAsset}`);
 
+    console.log(`Decimals: ${await vault.connect(investor).decimals()}`)
     console.log(`Preview Deposit: ${parseFloat(ethers.utils.formatUnits(await vault.connect(investor).previewDeposit(100000000), 6))}`)
     console.log(`Preview Mint: ${parseFloat(ethers.utils.formatUnits(await vault.connect(investor).previewMint(100000000), 6))}`)
     console.log(`Preview Withdraw: ${parseFloat(ethers.utils.formatUnits(await vault.connect(investor).previewWithdraw(100000000), 6))}`)

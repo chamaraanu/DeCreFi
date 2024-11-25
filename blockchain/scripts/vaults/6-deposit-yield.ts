@@ -27,7 +27,7 @@ async function main() {
     
     await asset.connect(investor).approve(vault.address, 10000000);
     console.log(`Asset approval done`);
-    await vault.connect(investor).depositYeild(investor.address, 10000000);
+    await vault.connect(investor).depositYield(investor.address, 10000000);
     console.log(`Investor secure vault token shares: ${await vault.connect(investor).balanceOf(investor.address)}`);
 
 }

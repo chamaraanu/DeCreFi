@@ -31,7 +31,7 @@ contract Vault is ERC4626Upgradeable {
         return shares;
     }
 
-    function depositYeild(address caller, uint256 assets) public {
+    function depositYield(address caller, uint256 assets) public {
         totalAssetsDeposited += assets;
         address assetAddress = super.asset();
         SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(assetAddress), caller, address(this), assets);
