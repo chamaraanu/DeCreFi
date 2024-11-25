@@ -43,6 +43,11 @@ contract Vault is ERC4626Upgradeable {
         SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(assetAddress), address(this), caller, assets);
     }
 
+    function repayLoan(address caller, uint256 assets) public {
+        address assetAddress = super.asset();
+        SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(assetAddress), caller, address(this), assets);
+    }
+
     function getExchangeRate() public view returns (uint256) {
         return totalAssetsDeposited * 10 **18 / totalSharesOfferred;
     }

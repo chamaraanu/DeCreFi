@@ -16,7 +16,7 @@ async function main() {
         console.error(error);
     }
 
-    console.log(`Borrow flow`);
+    console.log(`Repay flow`);
     const vault = await ethers.getContractAt('Vault', addresses.investorVault);
     // test functions 
     const name = await vault.connect(investor).name();
@@ -26,9 +26,11 @@ async function main() {
 
     const asset = await ethers.getContractAt('Asset', addresses.asset);
     
-    await vault.connect(investor).fundLoan(borrower.address, 100000000);
+    await asset.connect(borrower).approve(vault.address, 100000000);
+    await vault.connect(borrower).repayLoan(borrower.address, 100000000);
     console.log(`Borrower asset token shares: ${await asset.connect(borrower).balanceOf(borrower.address)}`);
     console.log(`Vault asset token shares: ${await asset.connect(deployer).balanceOf(vault.address)}`);
+
 }
 
 main();
