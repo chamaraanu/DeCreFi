@@ -57,7 +57,7 @@ contract Vault is
         SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(assetAddress), caller, address(this), assets);
     }
 
-    function fundLoan(address caller, uint256 assets) public { // later to be changed to fund the actual loan than the caller
+    function fundLoan(address caller, uint256 assets) onlyRole(ORIGINATOR_ROLE) public { // later to be changed to fund the actual loan than the caller
         address assetAddress = super.asset();
         SafeERC20Upgradeable.safeApprove(IERC20Upgradeable(assetAddress), address(this), assets);
         SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(assetAddress), address(this), caller, assets);
@@ -75,6 +75,11 @@ contract Vault is
     function addInvestor(address investor) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _grantRole(INVESTOR_ROLE, investor);
         emit InvestorAdded(investor, block.timestamp, "Investor added");
+    }
+
+    function addOriginator(address originator) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _grantRole(ORIGINATOR_ROLE, originator);
+        emit OriginatorAdded(originator, block.timestamp, "Originator added");
     }
 
     /**

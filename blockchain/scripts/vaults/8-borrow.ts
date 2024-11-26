@@ -2,9 +2,10 @@ import { ethers, upgrades } from "hardhat";
 import { readJsonFromFile } from "../helpers/appendJSONToFile";
 
 async function main() {
-    let [deployer, investor, borrower] = await ethers.getSigners();
+    let [deployer, investor, originator, borrower] = await ethers.getSigners();
     console.log("Deployer address- ", deployer.address);
     console.log("Investor address- ", investor.address);
+    console.log("Originator address- ", originator.address);
     console.log("Borrower address- ", borrower.address);
     let addresses;
 
@@ -26,7 +27,7 @@ async function main() {
 
     const asset = await ethers.getContractAt('Asset', addresses.asset);
     
-    await vault.connect(investor).fundLoan(borrower.address, 100000000);
+    await vault.connect(originator).fundLoan(borrower.address, 100000000);
     console.log(`Borrower asset token shares: ${await asset.connect(borrower).balanceOf(borrower.address)}`);
     console.log(`Vault asset token shares: ${await asset.connect(deployer).balanceOf(vault.address)}`);
 }
