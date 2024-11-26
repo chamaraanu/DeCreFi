@@ -4,14 +4,16 @@ export async function deployVaultInstance(
     deployManager: DeployManager,
     assetAddress: string,
     vaultName: string,
-    vaultSymbol: string
+    vaultSymbol: string,
+    adminAddress: string
 ): Promise<string> {
 
     // Deploy Vault using the deployManager contract
     let tx = await deployManager.deployVault({
         assetAddress: assetAddress,
         vaultName: vaultName,
-        vaultSymbol: vaultSymbol
+        vaultSymbol: vaultSymbol,
+        adminAddress: adminAddress
     });
 
     // Create a promise to resolve the deployed contract address

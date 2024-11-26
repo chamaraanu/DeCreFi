@@ -3,10 +3,16 @@ pragma solidity 0.8.18;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC4626Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+
+import "./interfaces/IVault.sol";
 
 import "hardhat/console.sol";
 
-contract Vault is ERC4626Upgradeable {
+contract Vault is 
+    IVault,
+    ERC4626Upgradeable,
+    AccessControlUpgradeable {
     using MathUpgradeable for uint256;
 
     uint256 private constant _BASIS_POINT_SCALE = 1e4;
@@ -14,13 +20,27 @@ contract Vault is ERC4626Upgradeable {
     uint256 private totalSharesOfferred;
     uint256 private exchangeRate;
 
+    bytes32 public constant INVESTOR_ROLE = keccak256("INVESTOR_ROLE");
+
+    bytes32 public constant LOAN_MANAGER_ROLE = keccak256("LOAN_MANAGER_ROLE");
+
+    bytes32 public constant ORIGINATOR_ROLE = keccak256("ORIGINATOR_ROLE");
     
-    function initialize(IERC20Upgradeable asset, string memory _name, string memory _symbol) public initializer {
+    function initialize(
+        IERC20Upgradeable asset, 
+        string memory _name, 
+        string memory _symbol,
+        address admin
+    ) public initializer {
+
+        __AccessControl_init();
         __ERC20_init(_name, _symbol);  // Initialize ERC20Upgradeable
         __ERC4626_init(asset);        // Initialize ERC4626Upgradeable
+
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
     }
 
-    function deposit(uint256 assets, address receiver) public virtual override returns (uint256) {
+    function deposit(uint256 assets, address receiver) onlyRole(INVESTOR_ROLE) public virtual override returns (uint256) {
         require(assets <= maxDeposit(receiver), "ERC4626: deposit more than max");
 
         uint256 shares = previewDeposit(assets);
@@ -50,6 +70,11 @@ contract Vault is ERC4626Upgradeable {
 
     function getExchangeRate() public view returns (uint256) {
         return totalAssetsDeposited * 10 **18 / totalSharesOfferred;
+    }
+
+    function addInvestor(address investor) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _grantRole(INVESTOR_ROLE, investor);
+        emit InvestorAdded(investor, block.timestamp, "Investor added");
     }
 
     /**

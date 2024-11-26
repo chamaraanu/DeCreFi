@@ -37,7 +37,8 @@ contract DeployManager {
         address vaultContractAddress = _deployVault(
             inputArgs.assetAddress,
             inputArgs.vaultName,
-            inputArgs.vaultSymbol
+            inputArgs.vaultSymbol,
+            inputArgs.adminAddress
         );
         
         emit VaultContractDeployed(
@@ -49,14 +50,16 @@ contract DeployManager {
     function _deployVault(
         address assetAddress,
         string memory vaultName,
-        string memory vaultSymbol
+        string memory vaultSymbol,
+        address adminAddress
     ) internal returns (address) {
         bytes memory initArgs = abi.encodeCall(
             InterfaceERC4626.initialize,
             (
                 assetAddress,
                 vaultName,
-                vaultSymbol
+                vaultSymbol,
+                adminAddress
             )
         );
         return address(new ERC1967Proxy(erc4626LogicAddress, initArgs));
@@ -67,10 +70,11 @@ struct DeployVault {
     address assetAddress;
     string vaultName;
     string vaultSymbol;
+    address adminAddress;
 }
 
 interface InterfaceERC4626 {
     function initialize(
-        address _asset, string memory _name, string memory _symbol
+        address _asset, string memory _name, string memory _symbol, address admin
     ) external;
 }

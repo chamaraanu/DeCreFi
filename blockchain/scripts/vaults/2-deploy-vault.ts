@@ -20,14 +20,22 @@ async function main() {
     const DeployManager = await ethers.getContractFactory("DeployManager");
     const deployManager = await DeployManager.connect(deployer).attach(addresses.deployManager);
 
-    // Deploy vault for investor
+    // Deploy vault
     let investorVault = await deployVaultInstance(
         deployManager,
         addresses.asset,
         "CustomerVault",
-        "CVL"
+        "CVL",
+        deployer.address
     );
     console.log(`Vault deployed at ${investorVault}`);
+
+    // Connect to Vault
+    const Vault = await ethers.getContractFactory("Vault");
+    const vault = await Vault.connect(deployer).attach(investorVault);
+
+    // Add Investor 
+    vault.connect(deployer).addInvestor(investor.address);
 
     const newData = {
         investorVault: investorVault
