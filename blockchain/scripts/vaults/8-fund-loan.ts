@@ -1,5 +1,6 @@
 import { ethers, upgrades } from "hardhat";
 import { readJsonFromFile } from "../helpers/appendJSONToFile";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 
 async function main() {
     let [deployer, investor, originator, borrower] = await ethers.getSigners();
@@ -27,9 +28,9 @@ async function main() {
 
     const asset = await ethers.getContractAt('Asset', addresses.asset);
     
-    await vault.connect(originator).fundLoan(borrower.address, 100000000);
-    console.log(`Borrower asset token shares: ${await asset.connect(borrower).balanceOf(borrower.address)}`);
-    console.log(`Vault asset token shares: ${await asset.connect(deployer).balanceOf(vault.address)}`);
+    await vault.connect(originator).fundLoan(borrower.address, parseUnits('100', 6));
+    console.log(`Borrower asset token balance: ${formatUnits(await asset.connect(borrower).balanceOf(borrower.address), 6)}`);
+    console.log(`Vault asset token balance: ${formatUnits(await asset.connect(deployer).balanceOf(vault.address), 6)}`);
 }
 
 main();

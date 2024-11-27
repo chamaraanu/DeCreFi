@@ -1,9 +1,10 @@
 import { ethers, upgrades } from "hardhat";
 import { writeJsonToFile } from "../helpers/appendJSONToFile";
 import { deployManagerDeployment } from "../contractDeployFunctions";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 
 async function main() {
-    let [deployer, investor] = await ethers.getSigners();
+    let [deployer, investor, originator] = await ethers.getSigners();
     console.log("Deployer address- ", deployer.address);
     console.log("Investor address- ", investor.address);
 
@@ -16,15 +17,16 @@ async function main() {
     console.log("Vault Logic Contract deployed at: ", vaultAddress);
 
     const Asset = await ethers.getContractFactory("Asset");
-    const investorAsset = Asset.connect(investor);
-    // Deploy the Asset proxy using investor
-    const asset = await upgrades.deployProxy(investorAsset, ["Asset Token", "AST"], { initializer: 'initialize' });
+    const deployerAsset = Asset.connect(deployer);
+    // Deploy the Asset proxy using deployer
+    const asset = await upgrades.deployProxy(deployerAsset, ["Asset Token", "AST"], { initializer: 'initialize' });
     await asset.deployed();
-    console.log(`Asset ${asset.address} Balance of the investor is ${await asset.balanceOf(investor.address)}`);
 
-    // Connect to DeployManager
-  // const DeployManager = await ethers.getContractFactory("DeployManager");
-  // const deployManager = await DeployManager.connect(deployer).attach(deployManagerAddress);
+    await asset.mint(investor.address, parseUnits('1000', 6));
+    await asset.mint(originator.address, parseUnits('100', 6));
+    console.log(`Asset is ${asset.address} `);
+    console.log(`Balance of the investor is ${formatUnits(await asset.balanceOf(investor.address), 6)}`);
+    console.log(`Balance of the originator is ${formatUnits(await asset.balanceOf(originator.address), 6)}`);
 
     // Writing data to file
     const data = {

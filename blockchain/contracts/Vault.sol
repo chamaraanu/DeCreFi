@@ -51,7 +51,7 @@ contract Vault is
         return shares;
     }
 
-    function depositYield(address caller, uint256 assets) public {
+    function depositYield(address caller, uint256 assets) onlyRole(ORIGINATOR_ROLE) public {
         totalAssetsDeposited += assets;
         address assetAddress = super.asset();
         SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(assetAddress), caller, address(this), assets);
@@ -63,7 +63,7 @@ contract Vault is
         SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(assetAddress), address(this), caller, assets);
     }
 
-    function repayLoan(address caller, uint256 assets) public {
+    function repayLoan(address caller, uint256 assets) onlyRole(ORIGINATOR_ROLE) public {
         address assetAddress = super.asset();
         SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(assetAddress), caller, address(this), assets);
     }

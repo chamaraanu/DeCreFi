@@ -1,8 +1,9 @@
 import { ethers, upgrades } from "hardhat";
 import { readJsonFromFile } from "../helpers/appendJSONToFile";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 
 async function main() {
-    let [deployer, investor] = await ethers.getSigners();
+    let [deployer, investor, originator] = await ethers.getSigners();
     console.log("Deployer address- ", deployer.address);
     console.log("Investor address- ", investor.address);
     let addresses;
@@ -25,10 +26,12 @@ async function main() {
 
     const asset = await ethers.getContractAt('Asset', addresses.asset);
     
-    await asset.connect(investor).approve(vault.address, 10000000);
+    await asset.connect(originator).approve(vault.address, parseUnits('10', 6));
     console.log(`Asset approval done`);
-    await vault.connect(investor).depositYield(investor.address, 10000000);
-    console.log(`Investor secure vault token shares: ${await vault.connect(investor).balanceOf(investor.address)}`);
+    await vault.connect(originator).depositYield(originator.address, parseUnits('10', 6));
+    console.log(`Investor vault token shares: ${formatUnits(await vault.connect(investor).balanceOf(investor.address), 6)}`);
+    console.log(`Investor asset token shares: ${formatUnits(await asset.connect(investor).balanceOf(investor.address), 6)}`);
+    console.log(`Originator asset token shares: ${formatUnits(await asset.connect(originator).balanceOf(originator.address), 6)}`);
 
 }
 

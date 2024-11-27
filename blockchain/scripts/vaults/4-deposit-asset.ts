@@ -1,5 +1,6 @@
 import { ethers, upgrades } from "hardhat";
 import { readJsonFromFile } from "../helpers/appendJSONToFile";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 
 async function main() {
     let [deployer, investor] = await ethers.getSigners();
@@ -25,10 +26,10 @@ async function main() {
 
     const asset = await ethers.getContractAt('Asset', addresses.asset);
     
-    await asset.connect(investor).approve(vault.address, 100000000);
+    await asset.connect(investor).approve(vault.address, parseUnits('100', 6));
     console.log(`Asset approval done`);
-    await vault.connect(investor).deposit(100000000, investor.address);
-    console.log(`Investor secure vault token shares: ${await vault.connect(investor).balanceOf(investor.address)}`);
+    await vault.connect(investor).deposit(parseUnits('100', 6), investor.address);
+    console.log(`Investor secure vault token shares: ${formatUnits(await vault.connect(investor).balanceOf(investor.address), 6)}`);
 
 }
 
