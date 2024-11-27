@@ -1,5 +1,6 @@
 import { ethers, upgrades } from "hardhat";
 import { readJsonFromFile } from "../helpers/appendJSONToFile";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 
 async function main() {
     let [deployer, investor] = await ethers.getSigners();
@@ -25,16 +26,16 @@ async function main() {
 
     const asset = await ethers.getContractAt('Asset', addresses.asset);
 
-    console.log(`Vault asset balance: ${await asset.balanceOf(vault.address)}`);
-    console.log(`Investor secure vault token shares: ${await vault.connect(investor).balanceOf(investor.address)}`);
+    console.log(`Vault asset balance: ${formatUnits(await asset.balanceOf(vault.address), 6)}`);
+    console.log(`Investor vault token shares: ${formatUnits(await vault.connect(investor).balanceOf(investor.address), 6)}`);
 
-    await vault.connect(investor).approve(vault.address, 100000000);
+    await vault.connect(investor).approve(vault.address, parseUnits('70', 6));
     console.log(`Token approval done`);
 
-    await vault.connect(investor).redeem(100000000, investor.address, investor.address);
+    await vault.connect(investor).redeem(parseUnits('70', 6), investor.address, investor.address);
 
-    console.log(`Investor secure vault token shares: ${await vault.connect(investor).balanceOf(investor.address)}`);
-    console.log(`Investor assets balance: ${await asset.connect(investor).balanceOf(investor.address)}`);
+    console.log(`Investor vault token shares: ${formatUnits(await vault.connect(investor).balanceOf(investor.address), 6)}`);
+    console.log(`Investor assets balance: ${formatUnits(await asset.connect(investor).balanceOf(investor.address), 6)}`);
 
 }
 

@@ -51,6 +51,28 @@ contract Vault is
         return shares;
     }
 
+    function withdraw(uint256 assets, address receiver, address owner) onlyRole(INVESTOR_ROLE) public virtual override returns (uint256) {
+        require(assets <= maxWithdraw(owner), "ERC4626: withdraw more than max");
+
+        uint256 shares = previewWithdraw(assets);
+        _withdraw(_msgSender(), receiver, owner, assets, shares);
+        totalAssetsDeposited -= assets;
+        totalSharesOfferred -= shares;
+
+        return shares;
+    }
+
+    function redeem(uint256 shares, address receiver, address owner) onlyRole(INVESTOR_ROLE) public virtual override returns (uint256) {
+        require(shares <= maxRedeem(owner), "ERC4626: redeem more than max");
+
+        uint256 assets = previewRedeem(shares);
+        _withdraw(_msgSender(), receiver, owner, assets, shares);
+        totalAssetsDeposited -= assets;
+        totalSharesOfferred -= shares;
+
+        return assets;
+    }
+
     function depositYield(address caller, uint256 assets) onlyRole(ORIGINATOR_ROLE) public {
         totalAssetsDeposited += assets;
         address assetAddress = super.asset();
