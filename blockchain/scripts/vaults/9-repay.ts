@@ -27,8 +27,13 @@ async function main() {
 
     const asset = await ethers.getContractAt('Asset', addresses.asset);
     
-    await asset.connect(borrower).approve(vault.address, parseUnits('100', 6));
-    await vault.connect(originator).repayLoan(borrower.address, parseUnits('100', 6));
+    let tx;
+    tx = await asset.connect(borrower).approve(vault.address, parseUnits('100', 6));
+    await tx.wait();
+
+    tx = await vault.connect(originator).repayLoan(borrower.address, parseUnits('100', 6));
+    await tx.wait();
+    
     console.log(`Borrower asset token balance: ${formatUnits(await asset.connect(borrower).balanceOf(borrower.address), 6)}`);
     console.log(`Vault asset token balance: ${formatUnits(await asset.connect(deployer).balanceOf(vault.address), 6)}`);
 

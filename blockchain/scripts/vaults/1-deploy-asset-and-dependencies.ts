@@ -7,6 +7,7 @@ async function main() {
     let [deployer, investor, originator] = await ethers.getSigners();
     console.log("Deployer address- ", deployer.address);
     console.log("Investor address- ", investor.address);
+    console.log("Originator address- ", originator.address);
 
     // Deploy DeployManager Contract and related contracts
     const addresses: string[] = await deployManagerDeployment(deployer);
@@ -22,8 +23,11 @@ async function main() {
     const asset = await upgrades.deployProxy(deployerAsset, ["Asset Token", "AST"], { initializer: 'initialize' });
     await asset.deployed();
 
-    await asset.mint(investor.address, parseUnits('1000', 6));
-    await asset.mint(originator.address, parseUnits('100', 6));
+    let tx;
+    tx = await asset.mint(investor.address, parseUnits('1000', 6));
+    await tx.wait();
+    tx = await asset.mint(originator.address, parseUnits('100', 6));
+    await tx.wait();
     console.log(`Asset is ${asset.address} `);
     console.log(`Balance of the investor is ${formatUnits(await asset.balanceOf(investor.address), 6)}`);
     console.log(`Balance of the originator is ${formatUnits(await asset.balanceOf(originator.address), 6)}`);

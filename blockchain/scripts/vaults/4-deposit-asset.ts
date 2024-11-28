@@ -26,10 +26,13 @@ async function main() {
 
     const asset = await ethers.getContractAt('Asset', addresses.asset);
     
-    await asset.connect(investor).approve(vault.address, parseUnits('100', 6));
+    let tx;
+    tx = await asset.connect(investor).approve(vault.address, parseUnits('100', 6));
+    await tx.wait();
     console.log(`Asset approval done`);
-    await vault.connect(investor).deposit(parseUnits('100', 6), investor.address);
-    console.log(`Investor secure vault token shares: ${formatUnits(await vault.connect(investor).balanceOf(investor.address), 6)}`);
+    tx = await vault.connect(investor).deposit(parseUnits('100', 6), investor.address);
+    await tx.wait();
+    console.log(`Investor vault token shares: ${formatUnits(await vault.connect(investor).balanceOf(investor.address), 6)}`);
 
 }
 

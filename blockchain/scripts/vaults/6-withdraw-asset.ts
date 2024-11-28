@@ -29,11 +29,14 @@ async function main() {
     console.log(`Vault asset balance: ${formatUnits(await asset.balanceOf(vault.address), 6)}`);
     console.log(`Investor vault token shares: ${formatUnits(await vault.connect(investor).balanceOf(investor.address), 6)}`);
 
-    await vault.connect(investor).approve(vault.address, parseUnits('100', 6));
+    let tx;
+    tx = await vault.connect(investor).approve(vault.address, parseUnits('100', 6));
+    await tx.wait();
     console.log(`Vault approval done`);
 
-    await vault.connect(investor).withdraw(parseUnits('100', 6), investor.address, investor.address);
-
+    tx = await vault.connect(investor).withdraw(parseUnits('100', 6), investor.address, investor.address);
+    await tx.wait();
+    
     console.log(`Investor vault token shares: ${formatUnits(await vault.connect(investor).balanceOf(investor.address), 6)}`);
     console.log(`Investor assets balance: ${formatUnits(await asset.connect(investor).balanceOf(investor.address), 6)}`);
 

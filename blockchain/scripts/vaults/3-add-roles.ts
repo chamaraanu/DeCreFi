@@ -20,9 +20,11 @@ async function main() {
     console.log(`Admin flow`);
     const vault = await ethers.getContractAt('Vault', addresses.investorVault);
 
-    // Add Investor 
-    vault.connect(deployer).addInvestor(investor.address);
-    vault.connect(deployer).addOriginator(originator.address);
+    let tx;
+    tx = await vault.connect(deployer).addInvestor(investor.address);
+    await tx.wait();
+    tx = await vault.connect(deployer).addOriginator(originator.address);
+    await tx.wait();
 }
 
 main();

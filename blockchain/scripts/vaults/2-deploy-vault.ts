@@ -34,8 +34,9 @@ async function main() {
     const Vault = await ethers.getContractFactory("Vault");
     const vault = await Vault.connect(deployer).attach(investorVault);
 
-    // Add Investor 
-    vault.connect(deployer).addInvestor(investor.address);
+    let tx;
+    tx = await vault.connect(deployer).addInvestor(investor.address);
+    await tx.wait();
 
     const newData = {
         investorVault: investorVault
