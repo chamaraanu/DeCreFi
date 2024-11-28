@@ -24,22 +24,3 @@ dataSources:
         - event: VaultContractDeployed(indexed address)
           handler: handleVaultContractDeployed
       file: ./src/deploy-manager.ts
-  - kind: ethereum
-    name: Vault
-    network: sepolia
-    source:
-      abi: Vault
-      startBlock: 7161253
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.7
-      language: wasm/assemblyscript
-      entities:
-        - VaultContractDeployed
-      abis:
-        - name: Vault
-          file: ./abis/Vault.json
-      eventHandlers:
-        - event: VaultContractDeployed(indexed address)
-          handler: handleVaultContractDeployed
-      file: ./src/deploy-manager.ts
