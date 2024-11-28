@@ -1,0 +1,7 @@
+type VaultContractDeployed @entity(immutable: true) {
+  id: Bytes!
+  vaultContractAddress: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
