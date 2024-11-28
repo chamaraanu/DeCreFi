@@ -1,6 +1,6 @@
 import { ethers, upgrades } from "hardhat";
 import { deployManagerDeployment } from "../contractDeployFunctions";
-import { deployERC3643Instance, deployVaultInstance } from "../deployInstances";
+import { deployVaultInstance } from "../deployInstances";
 import { deployOnchainIdInstance } from "../deployInstances-back";
 
 async function main() {
