@@ -26,8 +26,8 @@ async function main() {
 
     const asset = await ethers.getContractAt('Asset', addresses.asset);
 
-    console.log(`Vault asset balance: ${await asset.balanceOf(vault.address)}`);
-    console.log(`Investor secure vault token shares: ${await vault.connect(investor).balanceOf(investor.address)}`);
+    console.log(`Vault asset balance: ${formatUnits(await asset.balanceOf(vault.address), 6)}`);
+    console.log(`Investor vault token shares: ${formatUnits(await vault.connect(investor).balanceOf(investor.address), 6)}`);
 
     await vault.connect(investor).approve(vault.address, parseUnits('100', 6));
     console.log(`Vault approval done`);
