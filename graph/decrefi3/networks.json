@@ -1,8 +1,0 @@
-{
-  "sepolia": {
-    "DeployManager": {
-      "address": "0x858e93BC74BeEdEbeF6E7bAf6D77383F8e25586e",
-      "startBlock": 7174206
-    }
-  }
-}
