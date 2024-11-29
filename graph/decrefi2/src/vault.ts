@@ -83,6 +83,7 @@ export function handleInvestorAdded(event: InvestorAddedEvent): void {
   let entity = new InvestorAdded(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
+  entity.vault = event.params.vault
   entity.user = event.params.user
   entity.timestamp = event.params.timestamp
   entity.message = event.params.message

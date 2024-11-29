@@ -41,19 +41,19 @@ dataSources:
           handler: handleDeposit
         - event: Initialized(uint8)
           handler: handleInitialized
-        - event: InvestorAdded(indexed address,uint256,string)
+        - event: InvestorAdded(indexed address, indexed address, indexed address,uint256,string)
           handler: handleInvestorAdded
-        - event: InvestorDeposited(indexed address,indexed address,uint256,uint256)
+        - event: InvestorDeposited(indexed address, indexed address,indexed address,uint256,uint256)
           handler: handleInvestorDeposited
-        - event: InvestorRedeemed(indexed address,indexed address,uint256,uint256)
+        - event: InvestorRedeemed(indexed address, indexed address,indexed address,uint256,uint256)
           handler: handleInvestorRedeemed
-        - event: InvestorWithdrawn(indexed address,indexed address,uint256,uint256)
+        - event: InvestorWithdrawn(indexed address, indexed address,indexed address,uint256,uint256)
           handler: handleInvestorWithdrawn
-        - event: LoanFunded(indexed address,indexed address,uint256)
+        - event: LoanFunded(indexed address, indexed address,indexed address,uint256)
           handler: handleLoanFunded
-        - event: LoanRepaid(indexed address,indexed address,uint256)
+        - event: LoanRepaid(indexed address, indexed address,indexed address,uint256)
           handler: handleLoanRepaid
-        - event: OriginatorAdded(indexed address,uint256,string)
+        - event: OriginatorAdded(indexed address, indexed address,uint256,string)
           handler: handleOriginatorAdded
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
@@ -65,6 +65,6 @@ dataSources:
           handler: handleTransfer
         - event: Withdraw(indexed address,indexed address,indexed address,uint256,uint256)
           handler: handleWithdraw
-        - event: YeildDeposited(indexed address,indexed address,uint256)
+        - event: YeildDeposited(indexed address, indexed address,indexed address,uint256)
           handler: handleYeildDeposited
       file: ./src/vault.ts
