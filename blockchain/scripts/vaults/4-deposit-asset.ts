@@ -26,12 +26,27 @@ async function main() {
 
     const asset = await ethers.getContractAt('Asset', addresses.asset);
     
-    let tx;
+    let tx, receipt, event;
     tx = await asset.connect(investor).approve(vault.address, parseUnits('100', 6));
     await tx.wait();
     console.log(`Asset approval done`);
     tx = await vault.connect(investor).deposit(parseUnits('100', 6), investor.address);
-    await tx.wait();
+    receipt = await tx.wait();
+
+    // Fetch the emitted `InvestorDeposited` event
+    event = receipt.events?.find(e => e.event === 'InvestorDeposited');
+    if (event) {
+        const { vault: vaultAddress, investor, receiver, assets, shares } = event.args!;
+        console.log(`InvestorDeposited Event Details:`);
+        console.log(`Vault Address: ${vaultAddress}`);
+        console.log(`Investor Address: ${investor}`);
+        console.log(`Receiver: ${receiver}`);
+        console.log(`Assets: ${assets}`);
+        console.log(`Shares: ${shares}`);
+    } else {
+        console.error('InvestorDeposited event not found in transaction receipt.');
+    }
+
     console.log(`Investor vault token shares: ${formatUnits(await vault.connect(investor).balanceOf(investor.address), 6)}`);
 
 }

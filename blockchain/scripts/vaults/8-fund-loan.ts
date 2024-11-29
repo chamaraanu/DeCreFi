@@ -27,10 +27,23 @@ async function main() {
     console.log(`Asset is: ${setAsset}`);
 
     const asset = await ethers.getContractAt('Asset', addresses.asset);
-    
-    let tx = await vault.connect(originator).fundLoan(borrower.address, parseUnits('100', 6));
-    await tx.wait();
-    
+    let tx, receipt, event;
+    tx = await vault.connect(originator).fundLoan(borrower.address, parseUnits('100', 6));
+    receipt = await tx.wait();
+
+    // Fetch the emitted `LoanFunded` event
+    event = receipt.events?.find(e => e.event === 'LoanFunded');
+    if (event) {
+        const { vault: vaultAddress, originator, borrower, assets } = event.args!;
+        console.log(`LoanFunded Event Details:`);
+        console.log(`Vault Address: ${vaultAddress}`);
+        console.log(`Originator Address: ${originator}`);
+        console.log(`From Address: ${borrower}`);
+        console.log(`Assets: ${assets}`);
+    } else {
+        console.error('LoanFunded event not found in transaction receipt.');
+    }
+
     console.log(`Borrower asset token balance: ${formatUnits(await asset.connect(borrower).balanceOf(borrower.address), 6)}`);
     console.log(`Vault asset token balance: ${formatUnits(await asset.connect(deployer).balanceOf(vault.address), 6)}`);
 }

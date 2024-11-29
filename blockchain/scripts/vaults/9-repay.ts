@@ -27,12 +27,25 @@ async function main() {
 
     const asset = await ethers.getContractAt('Asset', addresses.asset);
     
-    let tx;
+    let tx, receipt, event;
     tx = await asset.connect(borrower).approve(vault.address, parseUnits('100', 6));
     await tx.wait();
 
     tx = await vault.connect(originator).repayLoan(borrower.address, parseUnits('100', 6));
-    await tx.wait();
+    receipt = await tx.wait();
+
+    // Fetch the emitted `LoanRepaid` event
+    event = receipt.events?.find(e => e.event === 'LoanRepaid');
+    if (event) {
+        const { vault: vaultAddress, originator, borrower, assets } = event.args!;
+        console.log(`LoanRepaid Event Details:`);
+        console.log(`Vault Address: ${vaultAddress}`);
+        console.log(`Originator Address: ${originator}`);
+        console.log(`Borrower: ${borrower}`);
+        console.log(`Assets: ${assets}`);
+    } else {
+        console.error('LoanRepaid event not found in transaction receipt.');
+    }
     
     console.log(`Borrower asset token balance: ${formatUnits(await asset.connect(borrower).balanceOf(borrower.address), 6)}`);
     console.log(`Vault asset token balance: ${formatUnits(await asset.connect(deployer).balanceOf(vault.address), 6)}`);

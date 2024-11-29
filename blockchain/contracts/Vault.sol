@@ -48,7 +48,7 @@ contract Vault is
         totalAssetsDeposited += assets;
         totalSharesOfferred += shares;
 
-        emit InvestorDeposited(_msgSender(), receiver, assets, shares);
+        emit InvestorDeposited(address(this), _msgSender(), receiver, assets, shares);
 
         return shares;
     }
@@ -61,7 +61,7 @@ contract Vault is
         totalAssetsDeposited -= assets;
         totalSharesOfferred -= shares;
 
-        emit InvestorWithdrawn(_msgSender(), receiver, assets, shares);
+        emit InvestorWithdrawn(address(this), _msgSender(), receiver, assets, shares);
 
         return shares;
     }
@@ -74,7 +74,7 @@ contract Vault is
         totalAssetsDeposited -= assets;
         totalSharesOfferred -= shares;
 
-        emit InvestorRedeemed(_msgSender(), receiver, assets, shares);
+        emit InvestorRedeemed(address(this), _msgSender(), receiver, assets, shares);
 
         return assets;
     }
@@ -84,7 +84,7 @@ contract Vault is
         address assetAddress = super.asset();
         SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(assetAddress), caller, address(this), assets);
 
-        emit YeildDeposited(_msgSender(), caller, assets);
+        emit YeildDeposited(address(this), _msgSender(), caller, assets);
     }
 
     function fundLoan(address caller, uint256 assets) onlyRole(ORIGINATOR_ROLE) public { // later to be changed to fund the actual loan than the caller
@@ -92,14 +92,14 @@ contract Vault is
         SafeERC20Upgradeable.safeApprove(IERC20Upgradeable(assetAddress), address(this), assets);
         SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(assetAddress), address(this), caller, assets);
 
-        emit LoanFunded(_msgSender(), caller, assets);
+        emit LoanFunded(address(this), _msgSender(), caller, assets);
     }
 
     function repayLoan(address caller, uint256 assets) onlyRole(ORIGINATOR_ROLE) public {
         address assetAddress = super.asset();
         SafeERC20Upgradeable.safeTransferFrom(IERC20Upgradeable(assetAddress), caller, address(this), assets);
 
-        emit LoanRepaid(_msgSender(), caller, assets);
+        emit LoanRepaid(address(this), _msgSender(), caller, assets);
     }
 
     function getExchangeRate() public view returns (uint256) {
@@ -108,12 +108,12 @@ contract Vault is
 
     function addInvestor(address investor) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _grantRole(INVESTOR_ROLE, investor);
-        emit InvestorAdded(investor, block.timestamp, "Investor added");
+        emit InvestorAdded(address(this), investor, block.timestamp, "Investor added");
     }
 
     function addOriginator(address originator) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _grantRole(ORIGINATOR_ROLE, originator);
-        emit OriginatorAdded(originator, block.timestamp, "Originator added");
+        emit OriginatorAdded(address(this), originator, block.timestamp, "Originator added");
     }
 
     /**

@@ -29,13 +29,27 @@ async function main() {
     console.log(`Vault asset balance: ${formatUnits(await asset.balanceOf(vault.address), 6)}`);
     console.log(`Investor vault token shares: ${formatUnits(await vault.connect(investor).balanceOf(investor.address), 6)}`);
 
-    let tx;
+    let tx, receipt, event;
     tx = await vault.connect(investor).approve(vault.address, parseUnits('100', 6));
     await tx.wait();
     console.log(`Vault approval done`);
 
     tx = await vault.connect(investor).withdraw(parseUnits('100', 6), investor.address, investor.address);
-    await tx.wait();
+    receipt = await tx.wait();
+
+    // Fetch the emitted `InvestorWithdrawn` event
+    event = receipt.events?.find(e => e.event === 'InvestorWithdrawn');
+    if (event) {
+        const { vault: vaultAddress, investor, receiver, assets, shares } = event.args!;
+        console.log(`InvestorWithdrawn Event Details:`);
+        console.log(`Vault Address: ${vaultAddress}`);
+        console.log(`Investor Address: ${investor}`);
+        console.log(`Receiver: ${receiver}`);
+        console.log(`Assets: ${assets}`);
+        console.log(`Shares: ${shares}`);
+    } else {
+        console.error('InvestorWithdrawn event not found in transaction receipt.');
+    }
     
     console.log(`Investor vault token shares: ${formatUnits(await vault.connect(investor).balanceOf(investor.address), 6)}`);
     console.log(`Investor assets balance: ${formatUnits(await asset.connect(investor).balanceOf(investor.address), 6)}`);

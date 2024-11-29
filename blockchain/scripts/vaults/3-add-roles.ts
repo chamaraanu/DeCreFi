@@ -20,11 +20,38 @@ async function main() {
     console.log(`Admin flow`);
     const vault = await ethers.getContractAt('Vault', addresses.investorVault);
 
-    let tx;
+    let tx, receipt, event;
     tx = await vault.connect(deployer).addInvestor(investor.address);
-    await tx.wait();
+    receipt = await tx.wait();
+
+    // Fetch the emitted `InvestorAdded` event
+    event = receipt.events?.find(e => e.event === 'InvestorAdded');
+    if (event) {
+        const { vault: vaultAddress, user, timestamp, message } = event.args!;
+        console.log(`InvestorAdded Event Details:`);
+        console.log(`Vault Address: ${vaultAddress}`);
+        console.log(`Investor Address: ${user}`);
+        console.log(`Timestamp: ${timestamp}`);
+        console.log(`Message: ${message}`);
+    } else {
+        console.error('InvestorAdded event not found in transaction receipt.');
+    }
+
     tx = await vault.connect(deployer).addOriginator(originator.address);
-    await tx.wait();
+    receipt = await tx.wait();
+
+    // Fetch the emitted `OriginatorAdded` event
+    event = receipt.events?.find(e => e.event === 'OriginatorAdded');
+    if (event) {
+        const { vault: vaultAddress, user, timestamp, message } = event.args!;
+        console.log(`OriginatorAdded Event Details:`);
+        console.log(`Vault Address: ${vaultAddress}`);
+        console.log(`Originator Address: ${user}`);
+        console.log(`Timestamp: ${timestamp}`);
+        console.log(`Message: ${message}`);
+    } else {
+        console.error('OriginatorAdded event not found in transaction receipt.');
+    }
 }
 
 main();
