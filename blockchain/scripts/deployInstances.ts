@@ -38,3 +38,44 @@ export async function deployVaultInstance(
     // Return the deployed Vault contract address
     return contractAddress;
 }
+
+export async function deployLoanInstance(
+    deployManager: DeployManager,
+    tokenName: string,
+    tokenSymbol: string,
+    baseUri: string,
+    metadataUri: string,
+    adminAddress: string
+): Promise<string> {
+
+    // Deploy Vault using the deployManager contract
+    let tx = await deployManager.deployLoan({
+        tokenName: tokenName,
+        tokenSymbol: tokenSymbol,
+        baseUri: baseUri,
+        metaDataUri: metadataUri,
+        adminAddress: adminAddress
+    });
+
+    // Create a promise to resolve the deployed contract address
+    const contractAddressPromise: Promise<string> = new Promise((resolve) => {
+        // Define an event handler for LoanContractDeployed event
+        const eventHandler = (
+            loanContractAddress: string,
+        ) => {
+            // Unsubscribe from the event and resolve the contract address
+            deployManager.off('LoanContractDeployed', eventHandler);
+            resolve(loanContractAddress);
+        };
+
+        // Subscribe to VaultContractDeployed event
+        deployManager.on('LoanContractDeployed', eventHandler);
+    });
+
+    // Wait for the contract address promise to resolve
+    const contractAddress: string = await contractAddressPromise;
+    await tx.wait();
+
+    // Return the deployed Vault contract address
+    return contractAddress;
+}

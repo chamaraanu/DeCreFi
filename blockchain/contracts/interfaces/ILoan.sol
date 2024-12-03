@@ -5,6 +5,17 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.so
 
 interface ILoan is IERC1155Upgradeable {
 
+    event LoanInitiated(
+        uint256 indexed id,
+        address borrower,
+        address originator,
+        address fundPool,
+        uint256 interestRate,
+        uint256 principal,
+        uint256 startDate,
+        uint256 maturityDate
+    );
+
     event Mint(
         address indexed to,
         string tokenName,

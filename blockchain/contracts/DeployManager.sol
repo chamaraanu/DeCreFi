@@ -10,14 +10,22 @@ contract DeployManager {
         address indexed vaultContractAddress
     );
 
+    event LoanContractDeployed(
+        address indexed loanContractAddress
+    );
+
     address immutable erc4626LogicAddress;
+    address immutable erc1155LogicAddress;
 
 
     constructor(
-        address _erc4626LogicAddress
+        address _erc4626LogicAddress,
+        address _erc1155LogicAddress
     ) {
         _validateZeroAddress(_erc4626LogicAddress, "_erc4626LogicAddress");
+        _validateZeroAddress(_erc1155LogicAddress, "_erc1155LogicAddress");
         erc4626LogicAddress = _erc4626LogicAddress;
+        erc1155LogicAddress = _erc1155LogicAddress;
     }
 
     error ZeroAddressError(string field);
@@ -42,7 +50,7 @@ contract DeployManager {
         );
         
         emit VaultContractDeployed(
-            vaultContractAddress
+            vaultContractAddress // emit vaultName and vaultSymbol
         );
         return [vaultContractAddress];
     }
@@ -64,6 +72,43 @@ contract DeployManager {
         );
         return address(new ERC1967Proxy(erc4626LogicAddress, initArgs));
     }
+
+    function deployLoan(
+        DeployLoan calldata inputArgs
+    ) public returns (address[1] memory) {
+        address loanContractAddress = _deployLoan(
+            inputArgs.tokenName,
+            inputArgs.tokenSymbol,
+            inputArgs.baseUri,
+            inputArgs.metaDataUri,
+            inputArgs.adminAddress
+        );
+        
+        emit LoanContractDeployed(
+            loanContractAddress
+        );
+        return [loanContractAddress];
+    }
+
+    function _deployLoan(
+        string memory tokenName,
+        string memory tokenSymbol,
+        string memory baseUri,
+        string memory metaDataUri,
+        address adminAddress
+    ) internal returns (address) {
+        bytes memory initArgs = abi.encodeCall(
+            InterfaceERC1155.initialize,
+            (
+                tokenName,
+                tokenSymbol,
+                baseUri,
+                metaDataUri,
+                adminAddress
+            )
+        );
+        return address(new ERC1967Proxy(erc1155LogicAddress, initArgs));
+    }
 }
 
 struct DeployVault {
@@ -73,8 +118,26 @@ struct DeployVault {
     address adminAddress;
 }
 
+struct DeployLoan {
+    string tokenName;
+    string tokenSymbol;
+    string baseUri;
+    string metaDataUri;
+    address adminAddress;
+}
+
 interface InterfaceERC4626 {
     function initialize(
         address _asset, string memory _name, string memory _symbol, address admin
+    ) external;
+}
+
+interface InterfaceERC1155 {
+    function initialize(
+        string memory tokenName,
+        string memory tokenSymbol,
+        string memory baseUri,
+        string memory metaDataUri,
+        address adminAddress
     ) external;
 }

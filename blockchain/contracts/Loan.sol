@@ -7,6 +7,8 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 
 import "./interfaces/ILoan.sol";
 
+import "hardhat/console.sol";
+
 contract Loan is ERC1155URIStorageUpgradeable, AccessControlUpgradeable, ILoan {
     using CountersUpgradeable for CountersUpgradeable.Counter;
     CountersUpgradeable.Counter private tokenIdCounter;
@@ -18,6 +20,14 @@ contract Loan is ERC1155URIStorageUpgradeable, AccessControlUpgradeable, ILoan {
     string public tokenSymbol;
     string public metaDataUri;
 
+    mapping(uint256 => address) private _borrowers;
+    mapping(uint256 => address) private _originators;
+    mapping(uint256 => address) private _fundPools;
+    mapping(uint256 => uint256) private _interestRates;
+    mapping(uint256 => uint256) private _principals;
+    mapping(uint256 => uint256) private _startDates;
+    mapping(uint256 => uint256) private _maturityDates;
+
     constructor() {
         _disableInitializers();
     }
@@ -26,7 +36,8 @@ contract Loan is ERC1155URIStorageUpgradeable, AccessControlUpgradeable, ILoan {
         string memory _name, 
         string memory _symbol,
         string memory _baseUri,
-        string memory _metadataUri
+        string memory _metadataUri,
+        address admin
     ) public initializer {
         tokenName = _name;
         tokenSymbol = _symbol;
@@ -36,14 +47,21 @@ contract Loan is ERC1155URIStorageUpgradeable, AccessControlUpgradeable, ILoan {
         __ERC1155URIStorage_init();
         _setBaseURI(_baseUri);
 
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(MINTER_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, admin);
+        _grantRole(MINTER_ROLE, admin);
     }
 
     function mint(
         address to,
         uint256 amount,
         string memory tokenUri,
+        address borrower,
+        address originator, 
+        address fundPool,
+        uint256 interestRate,
+        uint256 principal,
+        uint256 startDate,
+        uint256 maturityDate,
         bytes memory data
     )
         external
@@ -54,6 +72,7 @@ contract Loan is ERC1155URIStorageUpgradeable, AccessControlUpgradeable, ILoan {
         tokenIdCounter.increment();
 
         _setURI(tokenId, tokenUri);
+        _setLoan(tokenId, borrower, originator, fundPool, interestRate, principal, startDate, maturityDate);
         emitMintEvent(to, uri(tokenId), tokenId, amount);
 
         _mint(to, tokenId, amount, data);
@@ -86,6 +105,26 @@ contract Loan is ERC1155URIStorageUpgradeable, AccessControlUpgradeable, ILoan {
         _burn(_msgSender(), tokenId, amount);
 
         emit Burn(_msgSender(), tokenId, amount);
+    }
+
+    function _setLoan(
+        uint256 tokenId, 
+        address borrower, 
+        address originator, 
+        address fundPool, 
+        uint256 interestRate, 
+        uint256 principal, 
+        uint256 startDate, 
+        uint256 maturityDate
+    ) internal virtual {
+        _borrowers[tokenId] = borrower;
+        _originators[tokenId] = originator;
+        _fundPools[tokenId] = fundPool;
+        _interestRates[tokenId] = interestRate;
+        _principals[tokenId] = principal;
+        _startDates[tokenId] = startDate;
+        _maturityDates[tokenId] = maturityDate;
+        emit LoanInitiated(tokenId, borrower, originator, fundPool, interestRate, principal, startDate, maturityDate);
     }
 
     /**

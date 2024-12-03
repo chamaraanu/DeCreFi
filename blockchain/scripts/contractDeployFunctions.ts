@@ -14,17 +14,17 @@ export async function deployManagerDeployment(signer: SignerWithAddress): Promis
   const erc4626LogicContract = await await ethers.deployContract("Vault", []);
   await erc4626LogicContract.deployed();
 
-  // for onChainId deployment we need only below contracts
-  // identityImplementation
-  // implementationAuthority
-  // claimIssuer
+  const erc1155LogicContract = await await ethers.deployContract("Loan", []);
+  await erc1155LogicContract.deployed();
 
+  console.log(`1155 ${erc1155LogicContract.address}`)
 
   // Deploy DeployManager Contract
   const DeployManager = await ethers.getContractFactory("DeployManager");
 
   const deployManagerContract = await DeployManager.connect(signer).deploy(
-    erc4626LogicContract.address
+    erc4626LogicContract.address,
+    erc1155LogicContract.address
   );
 
   return [
