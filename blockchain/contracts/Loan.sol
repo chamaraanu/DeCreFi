@@ -67,7 +67,9 @@ contract Loan is ERC1155URIStorageUpgradeable, AccessControlUpgradeable, ILoan {
         external
         virtual
         onlyRole(MINTER_ROLE)
+        returns (uint256)
     {
+        console.log("Loan Mint called");
         uint256 tokenId = tokenIdCounter.current();
         tokenIdCounter.increment();
 
@@ -76,6 +78,7 @@ contract Loan is ERC1155URIStorageUpgradeable, AccessControlUpgradeable, ILoan {
         emitMintEvent(to, uri(tokenId), tokenId, amount);
 
         _mint(to, tokenId, amount, data);
+        return tokenId;
     }
 
     function emitMintEvent(

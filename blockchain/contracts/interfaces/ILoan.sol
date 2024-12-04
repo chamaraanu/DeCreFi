@@ -27,4 +27,18 @@ interface ILoan is IERC1155Upgradeable {
 
     event Burn(address indexed from, uint256 tokenId, uint256 amount);
 
+    function mint(
+        address to,
+        uint256 amount,
+        string memory tokenUri,
+        address borrower,
+        address originator, 
+        address fundPool,
+        uint256 interestRate,
+        uint256 principal,
+        uint256 startDate,
+        uint256 maturityDate,
+        bytes memory data
+    )
+        external returns (uint256);
 }

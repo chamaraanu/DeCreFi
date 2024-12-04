@@ -12,4 +12,6 @@ interface IVault {
     event YeildDeposited(address indexed vault, address indexed originator, address indexed fromAddress, uint256 assets);
     event LoanFunded(address indexed vault, address indexed originator, address indexed borrower, uint256 assets);
     event LoanRepaid(address indexed vault, address indexed originator, address indexed borrower, uint256 assets);
+
+    function fundLoan(address caller, uint256 assets) external;
 }
