@@ -3,14 +3,14 @@ pragma solidity 0.8.18;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-import "./interfaces/ILoanManager.sol";
+import "./interfaces/ICreditFacility.sol";
 import "./interfaces/ILoan.sol";
 import "./interfaces/IVault.sol";
 import "./Loan.sol";
 
 import "hardhat/console.sol";
 
-contract LoanManager is ILoanManager,  AccessControlUpgradeable {
+contract CreditFacility is ICreditFacility,  AccessControlUpgradeable {
 
     bytes32 public constant ORIGINATOR_ROLE = keccak256("ORIGINATOR_ROLE");
     bytes32 public constant BORROWER_ROLE = keccak256("BORROWER_ROLE");

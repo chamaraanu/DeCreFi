@@ -8,7 +8,7 @@ struct Drawdowns {
     bool repaidStatus;
 }
 
-interface ILoanManager {
+interface ICreditFacility {
 
     event LoanIssued(
         uint256 indexed id,
