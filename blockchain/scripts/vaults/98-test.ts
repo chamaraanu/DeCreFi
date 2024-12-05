@@ -21,6 +21,7 @@ async function main() {
     const asset = await ethers.getContractAt('Asset', addresses.asset);
     console.log(`Balance of the investor is ${formatUnits(await asset.balanceOf(investor.address), 6)}`);
     console.log(`Balance of the originator is ${formatUnits(await asset.balanceOf(originator.address), 6)}`);
+    console.log(`Balance of the borrower is ${formatUnits(await asset.balanceOf(borrower.address), 6)}`);
 }
 
 main();

@@ -52,6 +52,10 @@ async function main() {
     } else {
         console.error('LoanIssued event not found in transaction receipt.');
     }
+
+    const loan = await ethers.getContractAt('Loan', addresses.loanToken);
+
+    console.log(`Originator loan token is: ${await loan.balanceOf(originator.address, 0)}`);
 }
 
 main();

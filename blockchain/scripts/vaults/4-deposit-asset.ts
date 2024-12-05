@@ -41,8 +41,8 @@ async function main() {
         console.log(`Vault Address: ${vaultAddress}`);
         console.log(`Investor Address: ${investor}`);
         console.log(`Receiver: ${receiver}`);
-        console.log(`Assets: ${assets}`);
-        console.log(`Shares: ${shares}`);
+        console.log(`Assets: ${formatUnits(assets.toString(), 6)}`);
+        console.log(`Shares: ${formatUnits(shares.toString(), 6)}`);
     } else {
         console.error('InvestorDeposited event not found in transaction receipt.');
     }
