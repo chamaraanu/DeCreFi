@@ -53,7 +53,6 @@ contract Loan is ERC1155URIStorageUpgradeable, AccessControlUpgradeable, ILoan {
 
     function mint(
         address to,
-        uint256 amount,
         string memory tokenUri,
         address borrower,
         address originator, 
@@ -75,17 +74,16 @@ contract Loan is ERC1155URIStorageUpgradeable, AccessControlUpgradeable, ILoan {
 
         _setURI(tokenId, tokenUri);
         _setLoan(tokenId, borrower, originator, fundPool, interestRate, principal, startDate, maturityDate);
-        emitMintEvent(to, uri(tokenId), tokenId, amount);
+        emitMintEvent(to, uri(tokenId), tokenId);
 
-        _mint(to, tokenId, amount, data);
+        _mint(to, tokenId, 1, data);
         return tokenId;
     }
 
     function emitMintEvent(
         address to,
         string memory returnUri,
-        uint256 tokenId,
-        uint256 amount
+        uint256 tokenId
     ) private {
         emit Mint(
             to,
@@ -93,7 +91,7 @@ contract Loan is ERC1155URIStorageUpgradeable, AccessControlUpgradeable, ILoan {
             tokenSymbol,
             returnUri,
             tokenId,
-            amount
+            1
         );
     }
 

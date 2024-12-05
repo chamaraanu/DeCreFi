@@ -1,6 +1,13 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.18;
 
+struct Drawdowns {
+    uint256 amount;
+    uint256 tokenId;
+    uint256 date;
+    bool repaidStatus;
+}
+
 interface ILoanManager {
 
     event LoanIssued(

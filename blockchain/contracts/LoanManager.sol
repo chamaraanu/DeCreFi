@@ -13,62 +13,64 @@ import "hardhat/console.sol";
 contract LoanManager is ILoanManager,  AccessControlUpgradeable {
 
     bytes32 public constant ORIGINATOR_ROLE = keccak256("ORIGINATOR_ROLE");
+    bytes32 public constant BORROWER_ROLE = keccak256("BORROWER_ROLE");
 
-    ILoan public _loan;
-    IVault public _vault;
+    mapping(uint256 => Drawdowns) private _drawDowns;
+
+    address private _originator;
+    address private _borrower;
+    uint256 private _totalCreditLimit;
+    uint256 private _remainingLimit;
+    uint256 private _expiryDate;
+
+    ILoan private _loan;
+    IVault private _vault;
 
     function initialize(
+        address originator,
+        address borrower,
+        uint256 totalCreditLimit,
+        uint256 expiryDate,
         address loan,
-        address vault,
-        address originator
+        address vault
     ) public initializer {
         __AccessControl_init();
+
+        _originator = originator;
+        _borrower = borrower;
         _grantRole(ORIGINATOR_ROLE, originator);
+        _grantRole(BORROWER_ROLE, borrower);
+
+        _totalCreditLimit = totalCreditLimit;
+        _expiryDate = expiryDate;
 
         _loan = ILoan(loan);
         _vault = IVault(vault);
     }
 
-    function issueLoan(
-        address borrower,
+    function drawdown(
         string memory tokenUri,
         uint256 interestRate,
-        uint256 principal,
+        uint256 drawdownAmount,
         uint256 startDate,
         uint256 maturityDate,
         bytes memory data
-    ) external onlyRole(ORIGINATOR_ROLE) {
+    ) external onlyRole(BORROWER_ROLE) {
 
-        uint256 tokenId = _loan.mint(_msgSender(), principal, tokenUri, borrower, _msgSender(), address(_vault), interestRate, principal, startDate, maturityDate, data);
+        require(block.timestamp < _expiryDate, "Credit Facility is expired");
+        require(drawdownAmount < _remainingLimit, "Drawdown amount is higher than the remaining limit");
+        uint256 tokenId = _loan.mint(_originator, tokenUri, _borrower, _originator, address(_vault), interestRate, drawdownAmount, startDate, maturityDate, data);
+        _vault.fundLoan(_borrower, drawdownAmount);
 
         emit LoanIssued(
             tokenId,
-            borrower,
+            _borrower,
             _msgSender(),
             address(_vault),
             interestRate,
-            principal,
+            drawdownAmount,
             startDate,
             maturityDate
         );
     }
-
-    function fundDrawdown(
-        uint256 tokenId,
-        address borrower, 
-        uint256 amount
-    ) external onlyRole(ORIGINATOR_ROLE) {
-
-        _loan.burn(tokenId, amount, _msgSender());
-        _vault.fundLoan(borrower, amount);
-
-        emit DrawdownFunded(
-            tokenId,
-            borrower,
-            _msgSender(),
-            address(_vault),
-            amount
-        );
-    }
-
 }

@@ -29,7 +29,6 @@ interface ILoan is IERC1155Upgradeable {
 
     function mint(
         address to,
-        uint256 amount,
         string memory tokenUri,
         address borrower,
         address originator, 
