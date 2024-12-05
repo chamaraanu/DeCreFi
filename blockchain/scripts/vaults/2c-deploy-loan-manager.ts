@@ -38,6 +38,9 @@ async function main() {
     const MINTER_ROLE = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("MINTER_ROLE"));
     await loan.grantRole(MINTER_ROLE, loanManager.address);
 
+    const BURNER_ROLE = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("BURNER_ROLE"));
+    await loan.grantRole(BURNER_ROLE, loanManager.address);
+
     const ORIGINATOR_ROLE = ethers.utils.keccak256(ethers.utils.toUtf8Bytes("ORIGINATOR_ROLE"));
     await vault.grantRole(ORIGINATOR_ROLE, loanManager.address);
 

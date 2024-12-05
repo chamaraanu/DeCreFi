@@ -41,4 +41,11 @@ interface ILoan is IERC1155Upgradeable {
         bytes memory data
     )
         external returns (uint256);
+
+    function burn(
+        uint256 tokenId,
+        uint256 amount,
+        address originator
+    )
+        external;
 }

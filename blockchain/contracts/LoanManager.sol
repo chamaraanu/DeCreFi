@@ -30,8 +30,7 @@ contract LoanManager is ILoanManager,  AccessControlUpgradeable {
     }
 
     function issueLoan(
-        address borrower, 
-        uint256 amount,
+        address borrower,
         string memory tokenUri,
         uint256 interestRate,
         uint256 principal,
@@ -40,9 +39,7 @@ contract LoanManager is ILoanManager,  AccessControlUpgradeable {
         bytes memory data
     ) external onlyRole(ORIGINATOR_ROLE) {
 
-        console.log("Issue Loan Called");
-        uint256 tokenId = _loan.mint(_msgSender(), 1, tokenUri, borrower, _msgSender(), address(_vault), interestRate, principal, startDate, maturityDate, data);
-        _vault.fundLoan(borrower, amount);
+        uint256 tokenId = _loan.mint(_msgSender(), principal, tokenUri, borrower, _msgSender(), address(_vault), interestRate, principal, startDate, maturityDate, data);
 
         emit LoanIssued(
             tokenId,
@@ -53,6 +50,24 @@ contract LoanManager is ILoanManager,  AccessControlUpgradeable {
             principal,
             startDate,
             maturityDate
+        );
+    }
+
+    function fundDrawdown(
+        uint256 tokenId,
+        address borrower, 
+        uint256 amount
+    ) external onlyRole(ORIGINATOR_ROLE) {
+
+        _loan.burn(tokenId, amount, _msgSender());
+        _vault.fundLoan(borrower, amount);
+
+        emit DrawdownFunded(
+            tokenId,
+            borrower,
+            _msgSender(),
+            address(_vault),
+            amount
         );
     }
 

@@ -24,32 +24,25 @@ async function main() {
     console.log(`Loan Manager Address: ${loanManager.address}`);
 
     let tx, receipt, event;
-    tx = await loanManager.connect(originator).issueLoan(
+    tx = await loanManager.connect(originator).fundDrawdown(
+        0,
         borrower.address,
-        'QmRgippqroqi9T9qj6LvAKUpzvpdtU3uUpYomdLJ9eXPTf',
-        100,
-        parseUnits('100', 6),
-        1000,
-        1000,
-        ethers.constants.HashZero
+        parseUnits('20', 6)
     );
     receipt = await tx.wait();
 
-    // Fetch the emitted `LoanIssued` event
-    event = receipt.events?.find(e => e.event === 'LoanIssued');
+    // Fetch the emitted `DrawdownFunded` event
+    event = receipt.events?.find(e => e.event === 'DrawdownFunded');
     if (event) {
-        const { loanManager: tokenId, borrower, originator, fundPool, interestRate, principal, startDate, maturityDate } = event.args!;
-        console.log(`LoanIssued Event Details`);
+        const { loanManager: tokenId, borrower, originator, fundPool, amount } = event.args!;
+        console.log(`DrawdownFunded Event Details`);
         console.log(`Loan token Id: ${tokenId}`);
         console.log(`Borrower: ${borrower}`);
         console.log(`Originator: ${originator}`);
         console.log(`Fund Pool: ${fundPool}`);
-        console.log(`Interest Rate: ${interestRate}`);
-        console.log(`Principal: ${principal}`);
-        console.log(`Start Date: ${startDate}`);
-        console.log(`Maturity Date: ${maturityDate}`);
+        console.log(`Drawdown Amount: ${amount}`);
     } else {
-        console.error('LoanIssued event not found in transaction receipt.');
+        console.error('DrawdownFunded event not found in transaction receipt.');
     }
 
     const loan = await ethers.getContractAt('Loan', addresses.loanToken);

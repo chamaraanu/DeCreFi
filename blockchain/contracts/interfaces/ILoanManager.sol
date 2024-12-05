@@ -14,4 +14,12 @@ interface ILoanManager {
         uint256 maturityDate
     );
 
+    event DrawdownFunded(
+        uint256 indexed id,
+        address borrower,
+        address originator,
+        address fundPool,
+        uint256 amount
+    );
+
 }

@@ -99,15 +99,16 @@ contract Loan is ERC1155URIStorageUpgradeable, AccessControlUpgradeable, ILoan {
 
     function burn(
         uint256 tokenId,
-        uint256 amount
+        uint256 amount,
+        address originator
     )
         external
         virtual
         onlyRole(BURNER_ROLE)
     {
-        _burn(_msgSender(), tokenId, amount);
+        _burn(originator, tokenId, amount);
 
-        emit Burn(_msgSender(), tokenId, amount);
+        emit Burn(originator, tokenId, amount);
     }
 
     function _setLoan(
