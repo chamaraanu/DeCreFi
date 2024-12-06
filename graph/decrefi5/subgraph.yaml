@@ -8,7 +8,6 @@ dataSources:
     name: Loan
     network: sepolia
     source:
-      address: "0x61D3534579Bd722B0c70c86c994C343bEE4096Fe"
       abi: Loan
       startBlock: 7206810
     mapping:

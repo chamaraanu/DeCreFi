@@ -8,7 +8,7 @@ dataSources:
     name: DeployManager
     network: sepolia
     source:
-      address: "0x858e93BC74BeEdEbeF6E7bAf6D77383F8e25586e"
+      address: "0xE26a5F3132c4751D0557e83dBEE53B60B905c77B"
       abi: DeployManager
       startBlock: 7120000
     mapping:
